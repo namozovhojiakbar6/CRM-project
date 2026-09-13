@@ -11,16 +11,16 @@
 
 <script>
 export default {
-  name: "UserList",
+  name: 'UserList',
   data() {
     return {
       users: [
-        { id: 1, name: "Ali Valiyev", email: "ali@mail.com" },
-        { id: 2, name: "Otabek Toshmatov", email: "otabek@mail.com" },
-      ],
-    };
-  },
-};
+        { id: 1, name: 'Ali Valiyev', email: 'ali@mail.com' },
+        { id: 2, name: 'Otabek Toshmatov', email: 'otabek@mail.com' }
+      ]
+    }
+  }
+}
 </script>
 
 <style scoped>
