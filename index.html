@@ -1,0 +1,244 @@
+ <!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>CRM Loyiha</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f4f6f9; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h2 { color: #333; }
+        .search-box { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #007bff; color: white; }
+        .btn { padding: 5px 10px; margin-right: 5px; border: none; border-radius: 4px; cursor: pointer; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        .nav-tabs { margin-bottom: 20px; }
+        .nav-tabs button { padding: 10px 15px; margin-right: 5px; cursor: pointer; border: 1px solid #ccc; background: #e9ecef; border-radius: 4px; }
+        .nav-tabs button.active { background: #007bff; color: white; border-color: #007bff; }
+    </style>
+</head>
+<body>
+    <div id="app" class="container">
+        <h2>CRM Tizimi</h2>
+        
+        <div class="nav-tabs">
+            <button :class="{ active: currentTab === 'users' }" @click="currentTab = 'users'">Foydalanuvchilar</button>
+            <button :class="{ active: currentTab === 'companies' }" @click="currentTab = 'companies'">Kompaniyalar</button>
+            <button :class="{ active: currentTab === 'clients' }" @click="currentTab = 'clients'">Mijozlar</button>
+        </div>
+
+        <input type="text" v-model="searchQuery" placeholder="Qidirish..." class="search-box">
+
+        <!-- FOYDALANUVCHILAR -->
+        <div v-if="currentTab === 'users'">
+            <h3>Foydalanuvchilar ro'yxati</h3>
+            <button class="btn btn-primary" @click="addUser">Yangi foydalanuvchi qo'shish</button>
+            <table>
+                <tr><th>ID</th><th>Ism</th><th>Email</th><th>Amallar</th></tr>
+                <tr v-for="user in filteredUsers" :key="user.id">
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        <button class="btn btn-primary" @click="editUser(user)">O'zgartirish</button>
+                        <button class="btn btn-danger" @click="deleteUser(user.id)">O'chirish</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- KOMPANIYALAR -->
+        <div v-if="currentTab === 'companies'">
+            <h3>Kompaniyalar ro'yxati</h3>
+            <button class="btn btn-primary" @click="addCompany">Yangi kompaniya qo'shish</button>
+            <table>
+                <tr><th>ID</th><th>Kompaniya nomi</th><th>Amallar</th></tr>
+                <tr v-for="comp in filteredCompanies" :key="comp.id">
+                    <td>{{ comp.id }}</td>
+                    <td>{{ comp.name }}</td>
+                    <td>
+                        <button class="btn btn-primary" @click="editCompany(comp)">O'zgartirish</button>
+                        <button class="btn btn-danger" @click="deleteCompany(comp.id)">O'chirish</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- MIJOZLAR -->
+        <div v-if="currentTab === 'clients'">
+            <h3>Mijozlar ro'yxati</h3>
+            <button class="btn btn-primary" @click="addClient">Yangi mijoz qo'shish</button>
+            <table>
+                <tr><th>ID</th><th>Mijoz ismi</th><th>Kompaniyasi</th><th>Amallar</th></tr>
+                <tr v-for="client in filteredClients" :key="client.id">
+[9/13/2026 5:47 PM] Hojiakbar Namozov: <td>{{ client.id }}</td>
+                    <td>{{ client.name }}</td>
+                    <td>{{ client.company }}</td>
+                    <td>
+                        <button class="btn btn-primary" @click="editClient(client)">O'zgartirish</button>
+                        <button class="btn btn-danger" @click="deleteClient(client.id)">O'chirish</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                currentTab: 'users',
+                searchQuery: '',
+
+                users: [
+                    { id: 1, name: 'Ali Valiyev', email: 'ali@mail.com' },
+                    { id: 2, name: 'Otabek Toshmatov', email: 'otabek@mail.com' }
+                ],
+
+                companies: [
+                    { id: 1, name: 'Tech LLC' },
+                    { id: 2, name: 'Agro Invest' }
+                ],
+
+                clients: [
+                    { id: 1, name: 'Sardor Rahimov', company: 'Tech LLC' },
+                    { id: 2, name: 'Jasur Karimov', company: 'Agro Invest' }
+                ]
+            }
+        },
+
+        computed: {
+            filteredUsers() {
+                return this.users.filter(user =>
+                    user.name.toLowerCase().includes(
+                        this.searchQuery.toLowerCase()
+                    )
+                )
+            },
+
+            filteredCompanies() {
+                return this.companies.filter(company =>
+                    company.name.toLowerCase().includes(
+                        this.searchQuery.toLowerCase()
+                    )
+                )
+            },
+
+            filteredClients() {
+                return this.clients.filter(client =>
+                    client.name.toLowerCase().includes(
+                        this.searchQuery.toLowerCase()
+                    ) ||
+                    client.company.toLowerCase().includes(
+                        this.searchQuery.toLowerCase()
+                    )
+                )
+            }
+        },
+
+        methods: {
+            addUser() {
+                let name = prompt("Ism kiriting:")
+                let email = prompt("Email kiriting:")
+
+                if (name && email) {
+                    this.users.push({
+                        id: Date.now(),
+                        name: name,
+                        email: email
+                    })
+                }
+            },
+
+            editUser(user) {
+                let name = prompt("Yangi ism:", user.name)
+                let email = prompt("Yangi email:", user.email)
+
+                if (name) {
+                    user.name = name
+                }
+
+                if (email) {
+                    user.email = email
+                }
+            },
+
+            deleteUser(id) {
+                this.users = this.users.filter(user => user.id != id)
+            },
+
+            addCompany() {
+                let name = prompt("Kompaniya nomini kiriting:")
+
+                if (name) {
+                    this.companies.push({
+                        id: Date.now(),
+                        name: name
+                    })
+                }
+            },
+
+            editCompany(company) {
+                let name = prompt(
+                    "Yangi kompaniya nomi:",
+                    company.name
+                )
+
+                if (name) {
+                    company.name = name
+                }
+            },
+
+            deleteCompany(id) {
+                this.companies = this.companies.filter(
+                    company => company.id != id
+                )
+            },
+
+            addClient() {
+                let name = prompt("Mijoz ismini kiriting:")
+                let company = prompt("Kompaniyasini kiriting:")
+[9/13/2026 5:47 PM] Hojiakbar Namozov: if (name && company) {
+                    this.clients.push({
+                        id: Date.now(),
+                        name: name,
+                        company: company
+                    })
+                }
+            },
+
+            editClient(client) {
+                let name = prompt(
+                    "Yangi mijoz ismi:",
+                    client.name
+                )
+
+                let company = prompt(
+                    "Yangi kompaniyasi:",
+                    client.company
+                )
+
+                if (name) {
+                    client.name = name
+                }
+
+                if (company) {
+                    client.company = company
+                }
+            },
+
+            deleteClient(id) {
+                this.clients = this.clients.filter(
+                    client => client.id != id
+                )
+            }
+        }
+    })
+
+    app.mount('#app')
+    </script>
+</body>
+</html>
